@@ -263,6 +263,6 @@ public class RegisterScreen {
 				LoginScreen.frame.setVisible(false);
 			}
 			dialog.setVisible(true);
-		}System.out.println("konec 2");
+		}
 	}
 }

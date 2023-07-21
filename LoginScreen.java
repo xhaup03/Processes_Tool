@@ -6,15 +6,19 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
+import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+
+import petr_hausdor.loginscreenusers_0_1.LoginScreenUsers;
 
 //Main LoginScreen
 
@@ -24,6 +28,7 @@ public class LoginScreen {
 	static JFrame frame;
 	JTextField tfUserid;
 	JPasswordField pfPassword;
+	static String loginUserID;
 	
 	LoginScreen() {
 
@@ -38,6 +43,11 @@ public class LoginScreen {
 		URL urlIcon = LoginScreen.class.getResource("/MakroLogo.png");
 		ImageIcon iiIcondc = new ImageIcon(urlIcon);
 		frame.setIconImage(iiIcondc.getImage());
+		
+		//Version number
+		JLabel lVersion = new JLabel(version);
+		lVersion.setBounds(5,5,50,20);
+		
 			
 		//background picture
 		JPanel cPanel = (JPanel) frame.getContentPane();
@@ -84,9 +94,41 @@ public class LoginScreen {
 		bLogin.setFocusable(false);
 		frame.getRootPane().setDefaultButton(bLogin);
 		bLogin.addActionListener(new ActionListener() {
+			@SuppressWarnings("deprecation")
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("Registration");	//in progress			
+				LoginScreenUsers usersListTalend = new LoginScreenUsers();		
+				usersListTalend.runJob(new String[] {});;
+
+				//Array for list of logged workers
+				ArrayList<String[]> array= new ArrayList<String[]>();
+				for (int i = 0;i < usersListTalend.globalBuffer.size(); i++) {
+					array.add(usersListTalend.globalBuffer.get(i));	
+				}
+				//Two dimensional fields to transform the array
+				String [][] userList = new String [array.size()][6]; // userid,first_name,second_name,password,version ,tool,Date_
+				userList = array.toArray(userList);
+				boolean checkID =false;
+				for(String[] userid:userList ) {
+					if (userid[0].equals(tfUserid.getText())) {	//check userid
+						checkID=true;
+						if(userid[3].equals(pfPassword.getText())) { //check password
+							if(userid[4].equals(version)) {
+								new TaskScreen();
+								frame.dispose();
+							}else {
+								JOptionPane.showMessageDialog(frame, "Wrong version, download newest version \"" +userid[4] + "\" ASAP!!!", "WrongVersion", JOptionPane.WARNING_MESSAGE, null);
+								new TaskScreen();
+								frame.dispose();
+							}
+						}else {
+							JOptionPane.showMessageDialog(frame, "Wrong Password", "WrongPassword", JOptionPane.WARNING_MESSAGE, null);
+						}
+					}	
+				}
+				if (checkID==false) {	//wasn´t found any equal userID record
+					JOptionPane.showMessageDialog(frame, "Wrong User ID", "WrongUserID", JOptionPane.WARNING_MESSAGE, null);
+				};		
 			}			
 		});
 		
@@ -123,10 +165,10 @@ public class LoginScreen {
 		panel.add(bReset, Integer.valueOf(1));
 		panel.add(bRegister, Integer.valueOf(1));
 		panel.add(lProcesses,Integer.valueOf(1));
+		panel.add(lVersion,Integer.valueOf(1));
+		
 
 		frame.setVisible(true);
 
 	}
-	
-
 }
